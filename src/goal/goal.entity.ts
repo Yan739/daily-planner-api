@@ -22,7 +22,7 @@ export class Goal {
   @Column({ default: false })
   isAchieved: boolean;
 
-  @Column({ default: 1 }) // Priority level (1-5)
+  @Column({ default: 1 }) 
   priority: number;
 
   @CreateDateColumn()
