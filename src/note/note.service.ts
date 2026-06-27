@@ -52,31 +52,10 @@ export class NoteService {
   }
 
   /**
-   * Partial update — only fields explicitly present in noteData are written.
+   * Partial update - only fields explicitly present in noteData are written.
    * This prevents a PUT from accidentally clearing optional columns that the
    * caller omitted from the payload.
    */
   async updateNote(id: number, noteData: Partial<Note>): Promise<Note> {
     const updateFields: Partial<Note> = {};
-    if (noteData.title !== undefined) updateFields.title = noteData.title;
-    if (noteData.content !== undefined) updateFields.content = noteData.content;
-    if (noteData.date !== undefined) updateFields.date = noteData.date;
-    if (noteData.category !== undefined) updateFields.category = noteData.category;
-    if (noteData.isImportant !== undefined) updateFields.isImportant = noteData.isImportant;
-    if (noteData.isActive !== undefined) updateFields.isActive = noteData.isActive;
-
-    await this.noteRepository.update(id, updateFields);
-
-    // Re-fetch to return the full, up-to-date record (update() does not return rows)
-    const updatedNote = await this.noteRepository.findOneBy({ id });
-    if (!updatedNote) {
-      throw new Error(`Note with id ${id} not found`);
-    }
-    return updatedNote;
-  }
-
-  /** Hard-delete a note by primary key */
-  async deleteNote(id: number): Promise<void> {
-    await this.noteRepository.delete(id);
-  }
-}
+    if (noteData.title !== undefined) updateFields.title = no

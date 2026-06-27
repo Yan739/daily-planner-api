@@ -52,31 +52,11 @@ export class TaskService {
   }
 
   /**
-   * Partial update — only fields explicitly present in taskData are written.
+   * Partial update - only fields explicitly present in taskData are written.
    * This prevents a PUT from accidentally clearing optional columns that the
    * caller omitted from the payload.
    */
   async updateTask(id: number, taskData: Partial<Task>): Promise<Task> {
     const updateFields: Partial<Task> = {};
     if (taskData.title !== undefined) updateFields.title = taskData.title;
-    if (taskData.description !== undefined) updateFields.description = taskData.description;
-    if (taskData.date !== undefined) updateFields.date = taskData.date;
-    if (taskData.time !== undefined) updateFields.time = taskData.time;
-    if (taskData.status !== undefined) updateFields.status = taskData.status;
-    if (taskData.isCompleted !== undefined) updateFields.isCompleted = taskData.isCompleted;
-
-    await this.taskRepository.update(id, updateFields);
-
-    // Re-fetch to return the full, up-to-date record (update() does not return rows)
-    const updatedTask = await this.taskRepository.findOneBy({ id });
-    if (!updatedTask) {
-      throw new Error(`Task with id ${id} not found`);
-    }
-    return updatedTask;
-  }
-
-  /** Hard-delete a task by primary key */
-  async deleteTask(id: number): Promise<void> {
-    await this.taskRepository.delete(id);
-  }
-}
+    if (taskData.descripti

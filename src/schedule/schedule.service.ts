@@ -53,7 +53,7 @@ export class ScheduleService {
   }
 
   /**
-   * Partial update — only fields explicitly present in scheduleData are written.
+   * Partial update - only fields explicitly present in scheduleData are written.
    * This prevents a PUT from accidentally clearing optional columns that the
    * caller omitted from the payload.
    */
@@ -63,22 +63,4 @@ export class ScheduleService {
     if (scheduleData.description !== undefined) updateFields.description = scheduleData.description;
     if (scheduleData.date !== undefined) updateFields.date = scheduleData.date;
     if (scheduleData.startTime !== undefined) updateFields.startTime = scheduleData.startTime;
-    if (scheduleData.endTime !== undefined) updateFields.endTime = scheduleData.endTime;
-    if (scheduleData.status !== undefined) updateFields.status = scheduleData.status;
-    if (scheduleData.location !== undefined) updateFields.location = scheduleData.location;
-
-    await this.scheduleRepository.update(id, updateFields);
-
-    // Re-fetch to return the full, up-to-date record (update() does not return rows)
-    const updatedSchedule = await this.scheduleRepository.findOneBy({ id });
-    if (!updatedSchedule) {
-      throw new Error(`Schedule with id ${id} not found`);
-    }
-    return updatedSchedule;
-  }
-
-  /** Hard-delete a schedule entry by primary key */
-  async deleteSchedule(id: number): Promise<void> {
-    await this.scheduleRepository.delete(id);
-  }
-}
+  

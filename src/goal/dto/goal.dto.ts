@@ -4,8 +4,8 @@ import { IsString, IsOptional, IsBoolean, IsDateString, IsInt, Min, Max } from '
  * DTOs (Data Transfer Objects) act as the validation boundary for incoming HTTP bodies.
  * class-validator decorators run automatically when ValidationPipe is enabled globally.
  *
- * CreateGoalDto — all fields required for a new goal.
- * UpdateGoalDto — every field optional so the client can send partial patches.
+ * CreateGoalDto - all fields required for a new goal.
+ * UpdateGoalDto - every field optional so the client can send partial patches.
  */
 
 export class CreateGoalDto {
@@ -24,34 +24,4 @@ export class CreateGoalDto {
   @IsBoolean()
   isAchieved?: boolean;
 
-  /** Importance level: 1 (low) to 5 (critical) — enforced by @Min/@Max */
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Max(5)
-  priority?: number;
-}
-
-export class UpdateGoalDto {
-  @IsOptional()
-  @IsString()
-  title?: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsOptional()
-  @IsDateString()
-  date?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isAchieved?: boolean;
-
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Max(5)
-  priority?: number;
-}
+  /** Importance level: 1 (low) to 5 (critical) - enforced by

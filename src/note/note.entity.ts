@@ -24,25 +24,4 @@ export class Note {
   @Column('text')
   content: string;
 
-  /** ISO date string (YYYY-MM-DD) — ties the note to a calendar day */
-  @Column({ type: 'date' })
-  date: string;
-
-  /** Optional user-defined tag (e.g. 'work', 'personal', 'ideas') */
-  @Column({ nullable: true })
-  category: string;
-
-  /** Flags notes the user wants to highlight or pin */
-  @Column({ default: false })
-  isImportant: boolean;
-
-  /** Soft-delete flag — inactive notes are hidden in the UI but kept in the DB */
-  @Column({ default: true })
-  isActive: boolean;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-}
+  /** ISO date string (YYYY-MM-

@@ -1,4 +1,4 @@
-# Daily Planner — Backend API
+# Daily Planner - Backend API
 
 ![NestJS](https://img.shields.io/badge/NestJS-E0234E?logo=nestjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
@@ -7,7 +7,7 @@
 ![Swagger](https://img.shields.io/badge/Swagger-UI-85EA2D?logo=swagger&logoColor=black)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
-> **REST API for the Daily Planner app — built with NestJS, TypeORM, and MySQL.**
+> **REST API for the Daily Planner app - built with NestJS, TypeORM, and MySQL.**
 > Manages tasks, goals, notes, and hourly schedule entries, each scoped to a calendar date.
 
 ---
@@ -18,12 +18,12 @@ Daily Planner API is a **backend-only project** built with NestJS, demonstrating
 
 **What it demonstrates**
 
-- **NestJS modular architecture**: Four independent feature modules (`task`, `goal`, `note`, `schedule`) each own their entity, DTO, service, and controller — no cross-module coupling. Adding a fifth resource follows the exact same structure.
+- **NestJS modular architecture**: Four independent feature modules (`task`, `goal`, `note`, `schedule`) each own their entity, DTO, service, and controller - no cross-module coupling. Adding a fifth resource follows the exact same structure.
 - **Input validation with class-validator**: Every incoming request body is validated by a DTO before reaching the service layer. Required fields, type constraints, and value ranges (`@Min(1)` / `@Max(5)` on goal priority) are declared declaratively with decorators.
 - **Safe partial updates**: The `update` methods build an explicit `Partial<Entity>` from only the fields present in the request, so a PUT that omits an optional field never accidentally clears it.
-- **TypeORM + MySQL**: Entities map directly to database tables via decorators. `autoLoadEntities` means no manual entity list — each module registers its own entity via `TypeOrmModule.forFeature()`.
+- **TypeORM + MySQL**: Entities map directly to database tables via decorators. `autoLoadEntities` means no manual entity list - each module registers its own entity via `TypeOrmModule.forFeature()`.
 - **Swagger UI**: The OpenAPI spec is auto-generated from the code and exposed at `/api` for interactive endpoint testing without any separate HTTP client.
-- **Docker Compose**: A `compose.yaml` spins up the app and a MySQL instance together — zero local setup required.
+- **Docker Compose**: A `compose.yaml` spins up the app and a MySQL instance together - zero local setup required.
 - **Environment-driven config**: All secrets (DB host, credentials, port) come from `.env` via `@nestjs/config`; nothing is hardcoded.
 
 **Stack:** NestJS · TypeScript · TypeORM · MySQL 8 · Swagger · Docker Compose
@@ -43,7 +43,7 @@ src/
 ├── goal/                       # Same structure as task/
 ├── note/                       # Same structure as task/
 ├── schedule/                   # Same structure as task/
-├── app.module.ts               # Root module — TypeORM + ConfigModule setup
+├── app.module.ts               # Root module - TypeORM + ConfigModule setup
 └── main.ts                     # Bootstrap, CORS, Swagger
 ```
 
@@ -68,70 +68,4 @@ All resources expose the same five operations:
 | `GET` | `/tasks` | List all tasks |
 | `GET` | `/tasks/:id` | Get one task (404 if missing) |
 | `PUT` | `/tasks/:id` | Partial update |
-| `DELETE` | `/tasks/:id` | Delete a task |
-
-Replace `tasks` with `goals`, `notes`, or `schedules` for the other resources.
-
-Interactive documentation (Swagger UI): **`http://localhost:3000/api`**
-
----
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- MySQL 8 **or** Docker + Docker Compose (no local MySQL needed)
-
-### Option A — Docker Compose (recommended)
-
-```bash
-docker compose up
-```
-
-The API starts on port 3000 and a MySQL instance is provisioned automatically.
-
-### Option B — Local MySQL
-
-```bash
-# Install dependencies
-npm install
-
-# Copy and fill in environment variables
-cp .env.example .env   # edit DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME
-
-# Start in watch mode
-npm run start:dev
-```
-
-### Environment variables
-
-```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-DB_NAME=daily_planner
-PORT=3000
-```
-
----
-
-## Scripts
-
-```bash
-npm run start:dev    # Development (watch mode)
-npm run start:prod   # Production
-npm run build        # Compile TypeScript
-npm run test         # Unit tests
-npm run test:cov     # Unit tests with coverage report
-npm run test:e2e     # End-to-end tests
-npm run lint         # ESLint
-npm run format       # Prettier
-```
-
----
-
-## Author
-
-**Yann NGATEU** — personal project to practise modern backend architecture with NestJS and TypeORM.
+| `DELETE` | `/tasks/:id`

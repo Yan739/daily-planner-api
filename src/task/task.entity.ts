@@ -26,21 +26,4 @@ export class Task {
   @Column({ type: 'date' })
   date: string;
 
-  /** Optional time slot (HH:mm) — set when the task is pinned to an hour */
-  @Column({ type: 'time', nullable: true })
-  time: string;
-
-  /** Workflow state: 'pending' | 'in-progress' | 'completed' | 'cancelled' */
-  @Column({ default: 'pending' })
-  status: string;
-
-  /** Quick completion toggle — mirrors the checkbox in the frontend UI */
-  @Column({ default: false })
-  isCompleted: boolean;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-}
+  /** Optional tim
