@@ -3,6 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Schedule } from './schedule.entity';
 
+/**
+ * Business logic layer for schedule (time-block) management.
+ * All database access goes through the TypeORM repository injected in the constructor.
+ */
 @Injectable()
 export class ScheduleService {
   constructor(
@@ -10,12 +14,15 @@ export class ScheduleService {
     private scheduleRepository: Repository<Schedule>,
   ) {}
 
+  /**
+   * Create a new schedule entry.
+   * Explicitly constructs the object before saving to avoid persisting
+   * unexpected fields that might come from the raw request body.
+   */
   async createSchedule(scheduleData: Partial<Schedule>): Promise<Schedule> {
-    // Validate required fields
     if (!scheduleData.title || !scheduleData.date || !scheduleData.startTime) {
       throw new Error('Missing required fields: title, date, or startTime');
     }
-    // Set defaults for optional fields
     const schedule: Partial<Schedule> = {
       title: scheduleData.title,
       description: scheduleData.description ?? undefined,
@@ -28,39 +35,41 @@ export class ScheduleService {
     return this.scheduleRepository.save(schedule);
   }
 
-  async findAllSchedules(): Promise<Schedule[]> {
+  /**
+   * Return schedule entries, optionally filtered to a single calendar day.
+   * GET /schedules           → all entries
+   * GET /schedules?date=...  → entries for that YYYY-MM-DD date only
+   */
+  async findAllSchedules(date?: string): Promise<Schedule[]> {
+    if (date) {
+      return this.scheduleRepository.find({ where: { date } });
+    }
     return this.scheduleRepository.find();
   }
 
+  /** Find one entry by primary key; returns null when not found */
   async findScheduleById(id: number): Promise<Schedule | null> {
     return this.scheduleRepository.findOneBy({ id });
   }
 
+  /**
+   * Partial update — only fields explicitly present in scheduleData are written.
+   * This prevents a PUT from accidentally clearing optional columns that the
+   * caller omitted from the payload.
+   */
   async updateSchedule(id: number, scheduleData: Partial<Schedule>): Promise<Schedule> {
-    // Only update fields that exist in the entity
     const updateFields: Partial<Schedule> = {};
-    if (scheduleData.title !== undefined) {
-      updateFields.title = scheduleData.title;
-    }
-    if (scheduleData.description !== undefined) {
-      updateFields.description = scheduleData.description;
-    }
-    if (scheduleData.date !== undefined) {
-      updateFields.date = scheduleData.date;
-    }
-    if (scheduleData.startTime !== undefined) {
-      updateFields.startTime = scheduleData.startTime;
-    }
-    if (scheduleData.endTime !== undefined) {
-      updateFields.endTime = scheduleData.endTime;
-    }
-    if (scheduleData.status !== undefined) {
-      updateFields.status = scheduleData.status;
-    }
-    if (scheduleData.location !== undefined) {
-      updateFields.location = scheduleData.location;
-    }
+    if (scheduleData.title !== undefined) updateFields.title = scheduleData.title;
+    if (scheduleData.description !== undefined) updateFields.description = scheduleData.description;
+    if (scheduleData.date !== undefined) updateFields.date = scheduleData.date;
+    if (scheduleData.startTime !== undefined) updateFields.startTime = scheduleData.startTime;
+    if (scheduleData.endTime !== undefined) updateFields.endTime = scheduleData.endTime;
+    if (scheduleData.status !== undefined) updateFields.status = scheduleData.status;
+    if (scheduleData.location !== undefined) updateFields.location = scheduleData.location;
+
     await this.scheduleRepository.update(id, updateFields);
+
+    // Re-fetch to return the full, up-to-date record (update() does not return rows)
     const updatedSchedule = await this.scheduleRepository.findOneBy({ id });
     if (!updatedSchedule) {
       throw new Error(`Schedule with id ${id} not found`);
@@ -68,6 +77,7 @@ export class ScheduleService {
     return updatedSchedule;
   }
 
+  /** Hard-delete a schedule entry by primary key */
   async deleteSchedule(id: number): Promise<void> {
     await this.scheduleRepository.delete(id);
   }

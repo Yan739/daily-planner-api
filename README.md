@@ -1,155 +1,137 @@
-# Daily Planner API
+# Daily Planner — Backend API
 
-<div align="center">
-  <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" alt="NestJS">
-  <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
-  <img src="https://img.shields.io/badge/TypeORM-FE0803?style=for-the-badge&logo=typeorm&logoColor=white" alt="TypeORM">
-  <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger">
-</div>
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8-005C84?logo=mysql&logoColor=white)
+![TypeORM](https://img.shields.io/badge/TypeORM-0.3-FE0803?logo=typeorm&logoColor=white)
+![Swagger](https://img.shields.io/badge/Swagger-UI-85EA2D?logo=swagger&logoColor=black)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
-## Description
-
-**Daily Planner API** is a backend developed in **NestJS** and structured according to **clean architecture** (hexagonal) principles. It allows users to plan their day, manage tasks, goals, notes, hourly schedules, and check weather through an external API.
-
-## Project Objective
-
-This project aims to provide a **secure, clear, and extensible REST API** that allows users to:
-
-- Plan their day from 6:00 AM to 9:00 PM
-- Manage tasks, goals, notes, and schedules
-- Interact with web or mobile interfaces
-
-## Technical Architecture
-
-### Technologies Used
-
-- **NestJS** - Modular Node.js framework
-- **MySQL** - Relational database
-- **TypeORM** - ORM for TypeScript and JavaScript
-- **Swagger** - Interactive API documentation
-
-### Project Structure (Hexagonal)
-
-```
-src/
-├── modules/
-│   ├── tasks/         # Task management
-│   ├── schedules/     # Time schedules (hourly planning)
-│   ├── goals/         # Daily goals
-│   └── notes/         # Personal notes
-├── core/
-├── usecases/          # Business logic (Application Layer)
-├── services/          # Internal domain services
-├── repositories/      # Repository interfaces (Domain Layer)
-└── infrastructure/    # Repository implementations (MySQL)
-├── config/            # Global configuration (env, database)
-├── main.ts           # Application entry point
-└── app.module.ts     # Root application module
-```
-
-## Installation
-
-### Prerequisites
-
-- Node.js (version 18 or higher)
-- MySQL 8
-- NestJS CLI: `npm install -g @nestjs/cli`
-
-### Installation Steps
-
-```bash
-# Clone the project
-git clone https://github.com/your-username/daily-planner-api.git
-cd daily-planner-api
-
-# Install dependencies
-npm install
-
-# Copy and modify environment variables
-cp .env.example .env
-
-# Start the application
-npm run start:dev
-```
-
-## Configuration
-
-### Environment Variables
-
-Create a `.env` file at the project root:
-
-```env
-# Database
-DB_HOST=localhost
-DB_PORT=3306
-DB_USERNAME=username
-DB_PASSWORD=password
-DB_NAME=daily_planner
-
-# Application port
-PORT=3000
-```
-
-## API Documentation
-
-After startup, Swagger documentation is available at:
-
-```
-http://localhost:3000/api
-```
-
-It allows interactive testing of all API endpoints.
-
-## Available Scripts
-
-```bash
-# Development
-npm run start:dev
-
-# Production
-npm run start:prod
-
-# Tests
-npm run test
-
-# Unit tests with coverage
-npm run test:cov
-
-# End-to-end tests
-npm run test:e2e
-
-# Linting
-npm run lint
-
-# Code formatting
-npm run format
-```
-
-## Upcoming Features
-
-- Email or push notifications
-- Weekly schedule view
-- Multi-user management with roles
-- User preference storage (theme, language, etc.)
-
-## Contributing
-
-Contributions are welcome! Feel free to:
-
-1. Fork the project
-2. Create a branch for your feature (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Author
-
-**Yann NGATEU**
-
-Project created as part of a personal learning project to practice modern backend architectures.
+> **REST API for the Daily Planner app — built with NestJS, TypeORM, and MySQL.**
+> Manages tasks, goals, notes, and hourly schedule entries, each scoped to a calendar date.
 
 ---
 
-<div align="center">
-  Made with ❤️ by Yann NGATEU
-</div>
+## At a glance (for reviewers & recruiters)
+
+Daily Planner API is a **backend-only project** built with NestJS, demonstrating clean module separation, typed data validation, and database-agnostic persistence through an ORM.
+
+**What it demonstrates**
+
+- **NestJS modular architecture**: Four independent feature modules (`task`, `goal`, `note`, `schedule`) each own their entity, DTO, service, and controller — no cross-module coupling. Adding a fifth resource follows the exact same structure.
+- **Input validation with class-validator**: Every incoming request body is validated by a DTO before reaching the service layer. Required fields, type constraints, and value ranges (`@Min(1)` / `@Max(5)` on goal priority) are declared declaratively with decorators.
+- **Safe partial updates**: The `update` methods build an explicit `Partial<Entity>` from only the fields present in the request, so a PUT that omits an optional field never accidentally clears it.
+- **TypeORM + MySQL**: Entities map directly to database tables via decorators. `autoLoadEntities` means no manual entity list — each module registers its own entity via `TypeOrmModule.forFeature()`.
+- **Swagger UI**: The OpenAPI spec is auto-generated from the code and exposed at `/api` for interactive endpoint testing without any separate HTTP client.
+- **Docker Compose**: A `compose.yaml` spins up the app and a MySQL instance together — zero local setup required.
+- **Environment-driven config**: All secrets (DB host, credentials, port) come from `.env` via `@nestjs/config`; nothing is hardcoded.
+
+**Stack:** NestJS · TypeScript · TypeORM · MySQL 8 · Swagger · Docker Compose
+
+---
+
+## Architecture
+
+```
+src/
+├── task/
+│   ├── dto/task.dto.ts         # Input validation (CreateTaskDto, UpdateTaskDto)
+│   ├── task.controller.ts      # REST endpoints (POST / GET / PUT / DELETE)
+│   ├── task.entity.ts          # TypeORM entity → tasks table
+│   ├── task.module.ts          # Module wiring
+│   └── task.service.ts         # Business logic & DB access
+├── goal/                       # Same structure as task/
+├── note/                       # Same structure as task/
+├── schedule/                   # Same structure as task/
+├── app.module.ts               # Root module — TypeORM + ConfigModule setup
+└── main.ts                     # Bootstrap, CORS, Swagger
+```
+
+Each resource follows the same layered pattern:
+
+| Layer | File | Responsibility |
+|---|---|---|
+| Controller | `*.controller.ts` | HTTP routing, 404 handling, parameter parsing |
+| Service | `*.service.ts` | Business rules, partial-update logic, DB calls |
+| Entity | `*.entity.ts` | Table schema declared with TypeORM decorators |
+| DTO | `dto/*.dto.ts` | Request body shape and validation rules |
+
+---
+
+## API Endpoints
+
+All resources expose the same five operations:
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/tasks` | Create a task |
+| `GET` | `/tasks` | List all tasks |
+| `GET` | `/tasks/:id` | Get one task (404 if missing) |
+| `PUT` | `/tasks/:id` | Partial update |
+| `DELETE` | `/tasks/:id` | Delete a task |
+
+Replace `tasks` with `goals`, `notes`, or `schedules` for the other resources.
+
+Interactive documentation (Swagger UI): **`http://localhost:3000/api`**
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- MySQL 8 **or** Docker + Docker Compose (no local MySQL needed)
+
+### Option A — Docker Compose (recommended)
+
+```bash
+docker compose up
+```
+
+The API starts on port 3000 and a MySQL instance is provisioned automatically.
+
+### Option B — Local MySQL
+
+```bash
+# Install dependencies
+npm install
+
+# Copy and fill in environment variables
+cp .env.example .env   # edit DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME
+
+# Start in watch mode
+npm run start:dev
+```
+
+### Environment variables
+
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+DB_NAME=daily_planner
+PORT=3000
+```
+
+---
+
+## Scripts
+
+```bash
+npm run start:dev    # Development (watch mode)
+npm run start:prod   # Production
+npm run build        # Compile TypeScript
+npm run test         # Unit tests
+npm run test:cov     # Unit tests with coverage report
+npm run test:e2e     # End-to-end tests
+npm run lint         # ESLint
+npm run format       # Prettier
+```
+
+---
+
+## Author
+
+**Yann NGATEU** — personal project to practise modern backend architecture with NestJS and TypeORM.

@@ -10,7 +10,12 @@ import { NoteModule } from './note/note.module';
 
 @Module({
   imports: [
+    // Make process.env variables available application-wide without re-importing ConfigModule
     ConfigModule.forRoot({ isGlobal: true }),
+
+    // Database connection — all values come from the .env file
+    // autoLoadEntities: each feature module registers its own entity, no manual list needed here
+    // synchronize: true is convenient in development; disable it in production and use migrations instead
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -19,8 +24,10 @@ import { NoteModule } from './note/note.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: true, // TODO: switch to migrations before deploying to production
     }),
+
+    // Feature modules — each one owns its entity, service, and controller
     TaskModule,
     GoalModule,
     ScheduleModule,
